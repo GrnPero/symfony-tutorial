@@ -13,11 +13,16 @@ use Doctrine\ORM\EntityManagerInterface;
 
 final class ProductController extends AbstractController
 {
+    public function __construct(
+        private ProductRepository $repository,
+        private EntityManagerInterface $manager,
+    ) {}
+
     #[Route('/products', name: 'product_index')]
-    public function index(ProductRepository $repository): Response
+    public function index(): Response
     {
         return $this->render('product/index.html.twig', [
-            'products' => $repository->findAll(),
+            'products' => $this->repository->findAll(),
         ]);
     }
 
@@ -30,7 +35,7 @@ final class ProductController extends AbstractController
     }
 
     #[Route('/products/new', name: 'product_new')]
-    public function new(Request $request, EntityManagerInterface $manager): Response
+    public function new(Request $request): Response
     {
         $product = new Product;
 
@@ -39,9 +44,9 @@ final class ProductController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $manager->persist($product);
+            $this->manager->persist($product);
 
-            $manager->flush();
+            $this->manager->flush();
 
             $this->addFlash('notice', 'Product created successfully');
 
@@ -56,14 +61,14 @@ final class ProductController extends AbstractController
     }
 
     #[Route('/product/{id<\d+>}/edit', name: 'product_edit')]
-    public function edit(Product $product, Request $request, EntityManagerInterface $manager): Response
+    public function edit(Product $product, Request $request): Response
     {
         $form = $this->createForm(ProductType::class, $product);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $manager->flush();
+            $this->manager->flush();
 
             $this->addFlash('notice', 'Product updated successfully');
 
@@ -78,12 +83,12 @@ final class ProductController extends AbstractController
     }
 
     #[Route('/product/{id<\d+>}/delete', name: 'product_delete')]
-    public function delete(Request $request, Product $product, EntityManagerInterface $manager): Response
+    public function delete(Request $request, Product $product): Response
     {
         if ($request->isMethod('POST')) {
-            $manager->remove($product);
+            $this->manager->remove($product);
 
-            $manager->flush();
+            $this->manager->flush();
 
             $this->addFlash(
                 'notice',
