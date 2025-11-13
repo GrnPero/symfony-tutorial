@@ -11,6 +11,7 @@ use App\Form\ProductType;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\EntityManagerInterface;
 
+#[Route('/products')]
 final class ProductController extends AbstractController
 {
     public function __construct(
@@ -18,7 +19,7 @@ final class ProductController extends AbstractController
         private EntityManagerInterface $manager,
     ) {}
 
-    #[Route('/products', name: 'product_index')]
+    #[Route('', name: 'product_index')]
     public function index(): Response
     {
         return $this->render('product/index.html.twig', [
@@ -26,7 +27,7 @@ final class ProductController extends AbstractController
         ]);
     }
 
-    #[Route('/products/{id<\d+>}', 'product_show')]
+    #[Route('/{id<\d+>}', 'product_show')]
     public function show(Product $product): Response
     {
         return $this->render('product/show.html.twig', [
@@ -34,7 +35,7 @@ final class ProductController extends AbstractController
         ]);
     }
 
-    #[Route('/products/new', name: 'product_new')]
+    #[Route('/new', name: 'product_new')]
     public function new(Request $request): Response
     {
         $product = new Product;
@@ -60,7 +61,7 @@ final class ProductController extends AbstractController
         ]);
     }
 
-    #[Route('/product/{id<\d+>}/edit', name: 'product_edit')]
+    #[Route('/{id<\d+>}/edit', name: 'product_edit')]
     public function edit(Product $product, Request $request): Response
     {
         $form = $this->createForm(ProductType::class, $product);
@@ -82,7 +83,7 @@ final class ProductController extends AbstractController
         ]);
     }
 
-    #[Route('/product/{id<\d+>}/delete', name: 'product_delete')]
+    #[Route('/{id<\d+>}/delete', name: 'product_delete')]
     public function delete(Request $request, Product $product): Response
     {
         if ($request->isMethod('POST')) {
